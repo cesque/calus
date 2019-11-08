@@ -2,35 +2,41 @@ import Vue from 'vue'
 import { DateTime } from 'luxon'
 
 let defaultTemplate = `
-<div class="month" v-for="month in months" v-bind:data-month="month.time.toFormat('MM/y')">
-    <div class="month__header">
-    <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(-1)">
-        &lt;
-    </button>
-    <div class="month__text">
-        {{ month.time.toFormat(month.isInCurrentYear ? 'MMMM' : 'MMMM y') }}
-    </div>
-    <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(1)">
-        &gt;
-    </button>
-    </div>
-    <div class="month__days">
-    <div class="day"
-        v-for="day in month.days"
-        v-bind:data-date="+day.time"
-        v-bind:class="{
-        'is-today': day.isToday,
-        'is-not-today': !day.isToday,
-        'is-available': day.isAvailable,
-        'is-not-available': !day.isAvailable,
-        'is-past': day.isPast,
-        'is-future': day.isFuture,
-        'is-selected': day.isSelected,
-        }"
-        v-on:click="select(day)"
-    >
-        {{ day.time.day }}
-    </div>
+<div class="month-container" v-bind:class="{ 'month-container--column': displayInColumn }">
+    <div class="month" v-for="month in months" v-bind:data-month="month.time.toFormat('MM/y')">
+        <div class="month__header">
+        <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(-1)">
+            ‹
+        </button>
+        <div class="month__text">
+            {{ month.time.toFormat(month.isInCurrentYear ? 'MMMM' : 'MMMM y') }}
+        </div>
+        <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(1)">
+            ›
+        </button>
+        </div>
+        <div class="month__days">
+        <div class="day"
+            v-for="day in month.days"
+            v-bind:data-date="+day.time"
+            v-bind:class="{
+            'is-today': day.isToday,
+            'is-not-today': !day.isToday,
+            'is-available': day.isAvailable,
+            'is-not-available': !day.isAvailable,
+            'is-past': day.isPast,
+            'is-future': day.isFuture,
+            'is-selected': day.isSelected,
+            'is-this-month': day.isThisMonth,
+            'is-different-month': !day.isThisMonth,
+            }"
+            v-on:click="select(day)"
+        >
+            <div class="day__inner">
+                {{ day.time.day }}
+            </div>
+        </div>
+        </div>
     </div>
 </div>
 `
@@ -56,13 +62,15 @@ export default function calus(options) {
             displayInColumn: options.displayInColumn || false,
             // which month is currently shown on screen (only used when
             // `displayInColumn` is false)
-            currentDisplayedMonth: DateTime.local().startOf('month'),
+            currentDisplayedMonth: DateTime.local().setZone("America/Los_Angeles", { keepLocalTime: true }).startOf('month'),
 
             // callback for when an available date is clicked
-            onSelect: options.onSelect || function (day) { }
+            onSelect: options.onSelect || function (day) { },
+            // callback for when selected month is changed with button
+            onChangeMonth: options.onChangeMonth || function(prev, current) { },
         },
         computed: {
-            now: () => DateTime.local(),
+            now: () => DateTime.local().setZone("America/Los_Angeles", { keepLocalTime: true }),
             firstAvailable: function () {
                 return this.availableDates.length ? this.availableDates[0] : this.now;
             },
@@ -84,18 +92,24 @@ export default function calus(options) {
                 let startOfCurrentlyDisplayed = this.availableDates.findIndex(x => x > date)
                 let available = this.availableDates.slice(this.displayInColumn ? 0 : startOfCurrentlyDisplayed)
 
+                let end = (this.displayInColumn ? this.lastAvailable : this.currentDisplayedMonth)
+
                 let startOfToday = this.now.startOf('day')
 
-                while (date <= (this.displayInColumn ? this.lastAvailable : this.currentDisplayedMonth)) {
+                while (date <= end) {
                     let days = []
 
-                    for (let i = 1; i <= date.daysInMonth; i++) {
-                        let day = date.set({ day: i })
+                    let monthStart = date.startOf('month').startOf('week')
+                    let monthEnd = date.set({ day: date.daysInMonth }).plus({ weeks: 1 }).startOf('week').plus({ days: -1 })
+
+                    for (let day = monthStart; day <= monthEnd; day = day.plus({ days: 1 })) {
+                        while(available.length && day > available[0]) {
+                            available.shift()
+                        }
 
                         let isAvailable = false
                         if (available.length && available[0].hasSame(day, 'day')) {
                             isAvailable = true
-                            available.shift()
                         }
 
 
@@ -107,11 +121,12 @@ export default function calus(options) {
                             isAvailable: isAvailable,
                             isPast: startOf < startOfToday,
                             isFuture: startOf > startOfToday,
+                            isThisMonth: day.hasSame(date, 'month'),
                         })
                     }
 
                     months.push({
-                        time: days[0].time.startOf('month'),
+                        time: date.startOf('month'),
                         isCurrentMonth: +days[0].time.startOf('month') == +startOfToday.startOf('month'),
                         isInCurrentYear: +days[0].time.startOf('year') == +startOfToday.startOf('year'),
                         days: days
@@ -134,17 +149,15 @@ export default function calus(options) {
                     this.resetSelected()
                     this.selected = day.time
 
-                    this.$el.querySelector('[data-date="' + (+this.selected) + '"]').classList.add('is-selected')
+                    this.addSelectedStyle(this.selected)
 
-                    this.onSelect({
-                        day: day
-                    })
+                    this.onSelect(day)
                 }
             },
             setAvailable: function (array) {
                 this.resetSelected()
                 if (typeof array[0] == 'string') {
-                    this.availableDates = array.map(x => DateTime.fromISO(x))
+                    this.availableDates = array.map(x => DateTime.fromISO(x, { setZone: true}))
                 } else {
                     this.availableDates = array
                 }
@@ -152,6 +165,15 @@ export default function calus(options) {
             // resets the selected day
             resetSelected: function () {
                 this.selected = null
+                this.removeSelectedStyle()
+            },
+            addSelectedStyle: function(time) {
+                let selectedEl = this.$el.querySelector('[data-date="' + (+time) + '"]')
+                if(selectedEl) {
+                    selectedEl.classList.add('is-selected')
+                }
+            },
+            removeSelectedStyle: function() {
                 let currentSelectedDay = this.$el.querySelector('.day.is-selected')
                 if (currentSelectedDay) {
                     currentSelectedDay.classList.remove('is-selected')
@@ -159,8 +181,11 @@ export default function calus(options) {
             },
             scrollMonth: function (delta) {
                 if (!this.displayInColumn) {
-                    this.resetSelected()
+                    this.removeSelectedStyle()
                     this.currentDisplayedMonth = this.currentDisplayedMonth.plus({ months: delta })
+                    setTimeout(() => {
+                        this.addSelectedStyle(this.selected)
+                    }, 1)
                 }
             }
         }
