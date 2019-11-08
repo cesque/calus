@@ -2,10 +2,21 @@
   "name": "calus",
   "version": "0.0.1",
   "description": "a snappy vue calendar/date selector",
-  "main": "index.js",
+  "main": "./dist/calus.lib.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "luxon": "^1.21.1",
+    "vue": "^2.6.10"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.2",
+    "@babel/preset-env": "^7.7.1",
+    "babel-loader": "^8.0.6",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
+  }
 }
