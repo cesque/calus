@@ -48,6 +48,8 @@ export default function calus(options) {
 
     docEl.innerHTML = defaultTemplate
 
+    let timezone = options.timezone || 'America/Los_Angeles'
+
     return new Vue({
         el: el,
         data: {
@@ -62,7 +64,7 @@ export default function calus(options) {
             displayInColumn: options.displayInColumn || false,
             // which month is currently shown on screen (only used when
             // `displayInColumn` is false)
-            currentDisplayedMonth: DateTime.local().setZone("America/Los_Angeles", { keepLocalTime: true }).startOf('month'),
+            currentDisplayedMonth: DateTime.local().setZone(timezone, { keepLocalTime: true }).startOf('month'),
 
             // callback for when an available date is clicked
             onSelect: options.onSelect || function (day) { },
@@ -70,7 +72,7 @@ export default function calus(options) {
             onChangeMonth: options.onChangeMonth || function(prev, current) { },
         },
         computed: {
-            now: () => DateTime.local().setZone("America/Los_Angeles", { keepLocalTime: true }),
+            now: () => DateTime.local().setZone(timezone, { keepLocalTime: true }),
             firstAvailable: function () {
                 return this.availableDates.length ? this.availableDates[0] : this.now;
             },
