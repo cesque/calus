@@ -46,7 +46,9 @@ export default function calus(options) {
 
     if (!docEl) throw 'no element found: ' + docEl
 
-    docEl.innerHTML = defaultTemplate
+    if (options.useDefaultTemplate) {
+        docEl.innerHTML = defaultTemplate
+    }
 
     let timezone = options.timezone || 'America/Los_Angeles'
 
@@ -98,7 +100,7 @@ export default function calus(options) {
 
                 let startOfToday = this.now.startOf('day')
 
-                while (date <= end) {
+                while (date.startOf('month') <= end) {
                     let days = []
 
                     let monthStart = date.startOf('month').startOf('week')
@@ -129,8 +131,8 @@ export default function calus(options) {
 
                     months.push({
                         time: date.startOf('month'),
-                        isCurrentMonth: +days[0].time.startOf('month') == +startOfToday.startOf('month'),
-                        isInCurrentYear: +days[0].time.startOf('year') == +startOfToday.startOf('year'),
+                        isCurrentMonth: days[15].time.startOf('month').toFormat('y-MMM') === startOfToday.startOf('month').toFormat('y-MMM'),
+                        isInCurrentYear: days[15].time.startOf('year').toFormat('y') === startOfToday.startOf('year').toFormat('y'),
                         days: days
                     })
 
