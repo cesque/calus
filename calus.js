@@ -131,8 +131,8 @@ export default function calus(options) {
 
                     months.push({
                         time: date.startOf('month'),
-                        isCurrentMonth: +days[0].time.startOf('month') == +startOfToday.startOf('month'),
-                        isInCurrentYear: +days[0].time.startOf('year') == +startOfToday.startOf('year'),
+                        isCurrentMonth: days[15].time.startOf('month').toFormat('y-MMM') === startOfToday.startOf('month').toFormat('y-MMM'),
+                        isInCurrentYear: days[15].time.startOf('year').toFormat('y') === startOfToday.startOf('year').toFormat('y'),
                         days: days
                     })
 
