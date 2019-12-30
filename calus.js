@@ -65,6 +65,8 @@ export default function calus(options) {
             // which month is currently shown on screen (only used when
             // `displayInColumn` is false)
             currentDisplayedMonth: DateTime.local().setZone(timezone, { keepLocalTime: true }).startOf('month'),
+            // force the day to start on sunday instead of default monday
+            weekStartsOnSunday: options.weekStartsOnSunday || false,
 
             // callback for when an available date is clicked
             onSelect: options.onSelect || function (day) { },
@@ -101,8 +103,8 @@ export default function calus(options) {
                 while (date <= end) {
                     let days = []
 
-                    let monthStart = date.startOf('month').startOf('week')
-                    let monthEnd = date.set({ day: date.daysInMonth }).plus({ weeks: 1 }).startOf('week').plus({ days: -1 })
+                    let monthStart = date.startOf('month').startOf('week').plus({ days: this.weekStartsOnSunday ? -1 : 0 })
+                    let monthEnd = date.set({ day: date.daysInMonth }).plus({ weeks: 1 }).startOf('week').plus({ days: this.weekStartsOnSunday ? -2 : -1 })
 
                     for (let day = monthStart; day <= monthEnd; day = day.plus({ days: 1 })) {
                         while(available.length && day > available[0]) {
