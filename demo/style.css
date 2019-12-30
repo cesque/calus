@@ -1,0 +1,26 @@
+.month-container {
+    text-align: center;
+    width: 25%;
+}
+
+.month__header {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);;
+}
+
+.month__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.month__days .day {
+    padding: 0.25em 0;
+}
+
+.month__days .day.is-past {
+    opacity: 0.5;
+}
+
+.month__days .day.is-today {
+    text-decoration: underline;
+}

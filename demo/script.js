@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     let calendar = new Calus({
-        el: '#calendar'
+        el: '#calendar',
+        useDefaultTemplate: true,
     })
 
     console.log(calendar)
