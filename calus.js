@@ -104,7 +104,7 @@ export default function calus(options) {
                     let days = []
 
                     let monthStart = date.startOf('month').startOf('week').plus({ days: this.weekStartsOnSunday ? -1 : 0 })
-                    let monthEnd = date.set({ day: date.daysInMonth }).plus({ weeks: 1 }).startOf('week').plus({ days: this.weekStartsOnSunday ? -2 : -1 })
+                    let monthEnd = date.endOf('month').plus({ days: this.weekStartsOnSunday ? 1 : 0 }).endOf('week').plus({ days: this.weekStartsOnSunday ? -1 : 0 })
 
                     for (let day = monthStart; day <= monthEnd; day = day.plus({ days: 1 })) {
                         while(available.length && day > available[0]) {
@@ -131,8 +131,8 @@ export default function calus(options) {
 
                     months.push({
                         time: date.startOf('month'),
-                        isCurrentMonth: +days[0].time.startOf('month') == +startOfToday.startOf('month'),
-                        isInCurrentYear: +days[0].time.startOf('year') == +startOfToday.startOf('year'),
+                        isCurrentMonth: +days[10].time.startOf('month') == +startOfToday.startOf('month'),
+                        isInCurrentYear: +days[10].time.startOf('year') == +startOfToday.startOf('year'),
                         days: days
                     })
 
