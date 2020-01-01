@@ -26,6 +26,7 @@ module.exports = {
             }
         ]
     },
+    mode: process.env.NODE_ENV ? process.env.NODE_ENV : 'production',
     resolve: {
         alias: {
             "vue$": "vue/dist/vue.esm.js",

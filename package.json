@@ -7,7 +7,7 @@
     "build": "webpack",
     "start": "npx http-server . -d",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --watch"
+    "watch": "NODE_ENV=development webpack --watch"
   },
   "typings": "./index.d.ts",
   "author": "",
