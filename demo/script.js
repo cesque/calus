@@ -27,4 +27,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     console.log(calendar3);
+
+    let calendar4 = new Calus({
+        el: '#calendar4',
+        useDefaultTemplate: true,
+        start: window.luxon.DateTime.local().plus({months: -6}),
+        end: window.luxon.DateTime.local().plus({months: -3}),
+        limitCalendar: true,
+    });
+
+    console.log(calendar4);
 })

@@ -2,19 +2,39 @@ import Vue from 'vue'
 import { DateTime } from 'luxon'
 
 let defaultTemplate = `
-<div class="month-container" v-bind:class="{ 'month-container--column': displayInColumn }">
-    <div class="month" v-for="month in months" v-bind:data-month="month.time.toFormat('MM/y')">
+<div
+    class="month-container"
+    v-bind:class="{ 'month-container--column': displayInColumn }"
+>
+    <div
+        class="month"
+        v-for="month in months"
+        v-bind:data-month="month.time.toFormat('MM/y')"
+    >
         <div class="month__header">
-        <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(-1)">
-            ‹
-        </button>
-        <div class="month__text">
-            {{ month.time.toFormat(month.isInCurrentYear ? 'MMMM' : 'MMMM y') }}
+            <button
+                type="button"
+                class="month__control month__control--prev"
+                v-if="!displayInColumn"
+                v-on:click="scrollMonth(-1)"
+                v-bind:disabled="limitCalendar && month.time.startOf('month') &lt; startDate"
+            >
+                ‹
+            </button>
+            <div class="month__text">
+                {{ month.time.toFormat(month.isInCurrentYear ? 'MMMM' : 'MMMM y') }}
+            </div>
+            <button
+                type="button"
+                class="month__control month__control--prev"
+                v-if="!displayInColumn"
+                v-on:click="scrollMonth(1)"
+                v-bind:disabled="limitCalendar && month.time.endOf('month') &gt; endDate"
+            >
+                ›
+            </button>
         </div>
-        <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(1)">
-            ›
-        </button>
-        </div>
+
         <div class="month__days">
         <div class="day"
             v-for="day in month.days"
@@ -56,6 +76,9 @@ export default function calus(options) {
     return new Vue({
         el: el,
         data: {
+            // If set to true then the calendar will be limited to [ start/end | now/last available | first available/now ]
+            limitCalendar: !!options.limitCalendar,
+
             // list of dates which are available to select (use `setAvailable()` to
             // set this if you want to provide a list of ISO dates instead of Luxon
             // date objects)
@@ -70,7 +93,9 @@ export default function calus(options) {
 
             // which month is currently shown on screen (only used when
             // `displayInColumn` is false)
-            currentDisplayedMonth: DateTime.local().setZone(timezone, { keepLocalTime: true }).startOf('month'),
+            currentDisplayedMonth: options.start ?
+                options.start.startOf('month') :
+                DateTime.local().setZone(timezone, { keepLocalTime: true }).startOf('month'),
 
             // force the week to start on another day (0 is Monday)
             weekStartOffset: options.weekStartOffset || 0,
@@ -80,11 +105,27 @@ export default function calus(options) {
 
             // callback for when selected month is changed with button
             onChangeMonth: options.onChangeMonth || function(prev, current) { },
+
+            // Sets when the calendar should start (defaults to today)
+            start: options.start,
+
+            // Sets when the calendar should end (defaults to the last "available" date)
+            end: options.end,
         },
         computed: {
             now: () => DateTime.local().setZone(timezone, { keepLocalTime: true }),
+            startDate: function() {
+                return this.start ? this.start : this.now;
+            },
             firstAvailable: function () {
                 return this.availableDates.length ? this.availableDates[0] : this.now;
+            },
+            endDate: function () {
+                return this.end ?
+                    this.end :
+                    this.lastAvailable ?
+                        this.lastAvailable :
+                        this.now;
             },
             lastAvailable: function () {
                 return this.availableDates.length
@@ -101,9 +142,9 @@ export default function calus(options) {
                     date = this.currentDisplayedMonth
                 }
 
-                let startOfCurrentlyDisplayed = this.availableDates.findIndex(x => x > date)
-                let available = this.availableDates.slice(this.displayInColumn ? 0 : startOfCurrentlyDisplayed)
-                let end = (this.displayInColumn ? this.lastAvailable : this.currentDisplayedMonth)
+                let startOfCurrentlyDisplayed = this.availableDates.findIndex(x => x > date);
+                let available = this.availableDates.slice(this.displayInColumn ? 0 : startOfCurrentlyDisplayed);
+                let end = (this.displayInColumn ? this.endDate : this.currentDisplayedMonth);
 
                 let startOfToday = this.now.startOf('day');
 

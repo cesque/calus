@@ -22,13 +22,13 @@
         <div class="month-container" v-bind:class="{ 'month-container--column': displayInColumn }">
             <div class="month" v-for="month in months" v-bind:data-month="month.time.toFormat('MM/y')">
                 <div class="month__header">
-                    <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(-1)">
+                    <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(-1)" v-bind:disabled="month.time.startOf('month') &lt; startDate">
                         ‹
                     </button>
                     <div class="month__text">
                         {{ month.time.toFormat(month.isInCurrentYear ? 'MMMM' : 'MMMM y') }}
                     </div>
-                    <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(1)">
+                    <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(1)" v-bind:disabled="month.time.endOf('month') &gt; endDate">
                         ›
                     </button>
                 </div>
@@ -60,5 +60,9 @@
 
     <h1>Example of the calendar displayed as a column</h1>
     <div id="calendar3"></div>
+
+    <h1>Example of the calendar with a set start/end date</h1>
+    <p>Also limited to start/end dates (user cannot scroll further)</p>
+    <div id="calendar4"></div>
 </body>
 </html>
