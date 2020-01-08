@@ -1,0 +1,66 @@
+.month-container {
+    text-align: center;
+    width: 25%;
+}
+
+.month__header {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);;
+}
+
+.month__days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.month__days .day {
+    padding: 0.25em;
+}
+
+.month__days .day.is-past {
+    opacity: 0.6;
+}
+.month__days .day.is-different-month {
+    opacity: 0.15;
+}
+
+.month__days .day.is-available {
+    background-color: #000;
+    border-radius: 100%;
+    color: #fff;
+    font-weight: bold;
+}
+.month__days .day.is-this-month.is-available {
+    cursor: pointer;
+}
+
+.month__days .day.is-today {
+    text-decoration: underline;
+}
+
+
+
+.month-container--column {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    width: auto;
+}
+.month-container--column .month {
+    flex: 0 0 auto;
+}
+.month-container--column .month__header {
+    display: block;
+    text-align: left;
+}
+.month-container--column .month__text {
+    left: 0;
+    position: sticky;
+}
+.month-container--column .month__days {
+    display: block;
+    white-space: nowrap;
+}
+.month-container--column .day {
+    display: inline-block;
+}

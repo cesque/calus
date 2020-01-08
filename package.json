@@ -4,7 +4,10 @@
   "description": "a snappy vue calendar/date selector",
   "main": "./dist/calus.lib.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack",
+    "start": "npx http-server . -d",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "watch": "NODE_ENV=development webpack --watch"
   },
   "typings": "./index.d.ts",
   "author": "",
@@ -17,6 +20,7 @@
     "@babel/core": "^7.7.2",
     "@babel/preset-env": "^7.7.1",
     "babel-loader": "^8.0.6",
+    "http-server": "^0.12.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
   }
