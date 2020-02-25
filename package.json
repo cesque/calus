@@ -1,6 +1,6 @@
 {
   "name": "calus",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "a snappy vue calendar/date selector",
   "main": "./dist/calus.lib.js",
   "scripts": {
