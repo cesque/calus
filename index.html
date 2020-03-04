@@ -4,14 +4,62 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/luxon@1.21.1/build/global/luxon.min.js"></script>
     <script src="dist/calus.lib.js"></script>
     <script src="script.js"></script>
     <link rel="stylesheet" href="style.css">
     <title>Calus</title>
 </head>
 <body>
-    <div id="calendar"></div>
+    <h1>Example with <code>useDefaultTemplate: true</code> as an option</h1>
+    <div id="calendar1"></div>
+
+    <h1>Example with custom template</h1>
+    <p>Also makes use of the <code>availableDates</code> option to mark dates as available</p>
+    <div id="calendar2">
+        <div class="month-container" v-bind:class="{ 'month-container--column': displayInColumn }">
+            <div class="month" v-for="month in months" v-bind:data-month="month.time.toFormat('MM/y')">
+                <div class="month__header">
+                    <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(-1)" v-bind:disabled="month.time.startOf('month') &lt; startDate">
+                        ‹
+                    </button>
+                    <div class="month__text">
+                        {{ month.time.toFormat(month.isInCurrentYear ? 'MMMM' : 'MMMM y') }}
+                    </div>
+                    <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(1)" v-bind:disabled="month.time.endOf('month') &gt; endDate">
+                        ›
+                    </button>
+                </div>
+                <div class="month__days">
+                    <div class="day"
+                        v-for="day in month.days"
+                        v-bind:data-date="+day.time"
+                        v-bind:class="{
+                            'is-today': day.isToday,
+                            'is-not-today': !day.isToday,
+                            'is-available': day.isAvailable,
+                            'is-not-available': !day.isAvailable,
+                            'is-past': day.isPast,
+                            'is-future': day.isFuture,
+                            'is-selected': day.isSelected,
+                            'is-this-month': day.isThisMonth,
+                            'is-different-month': !day.isThisMonth,
+                        }"
+                        v-on:click="select(day)"
+                    >
+                        <div class="day__inner">
+                            {{ day.time.day }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h1>Example of the calendar displayed as a column</h1>
+    <div id="calendar3"></div>
+
+    <h1>Example of the calendar with a set start/end date</h1>
+    <p>Also limited to start/end dates (user cannot scroll further)</p>
+    <div id="calendar4"></div>
 </body>
 </html>

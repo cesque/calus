@@ -8,7 +8,6 @@ module.exports = {
         umdNamedDefine: true,
         filename: 'calus.lib.js',
     },
-    mode: 'production',
     // externals: {
     //     vue: 'Vue',
     //     luxon: 'luxon'
@@ -27,6 +26,7 @@ module.exports = {
             }
         ]
     },
+    mode: process.env.NODE_ENV ? process.env.NODE_ENV : 'production',
     resolve: {
         alias: {
             "vue$": "vue/dist/vue.esm.js",
