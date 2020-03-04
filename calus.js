@@ -64,7 +64,7 @@ export default function calus(options) {
             displayInColumn: options.displayInColumn || false,
             // which month is currently shown on screen (only used when
             // `displayInColumn` is false)
-            currentDisplayedMonth: DateTime.local().setZone(timezone, { keepLocalTime: false }).startOf('month'),
+            currentDisplayedMonth: DateTime.local().startOf('month'),
             // force the day to start on sunday instead of default monday
             weekStartsOnSunday: options.weekStartsOnSunday || false,
 
@@ -74,7 +74,7 @@ export default function calus(options) {
             onChangeMonth: options.onChangeMonth || function(prev, current) { },
         },
         computed: {
-            now: () => DateTime.local().setZone(timezone, { keepLocalTime: false }),
+            now: () => DateTime.local(),
             firstAvailable: function () {
                 return this.availableDates.length ? this.availableDates[0] : this.now;
             },
@@ -161,7 +161,7 @@ export default function calus(options) {
             setAvailable: function (array) {
                 this.resetSelected()
                 if (typeof array[0] == 'string') {
-                    this.availableDates = array.map(x => DateTime.fromISO(x, { setZone: true}))
+                    this.availableDates = array.map(x => DateTime.fromISO(x))
                 } else {
                     this.availableDates = array
                 }
