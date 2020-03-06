@@ -1,10 +1,10 @@
 {
   "name": "calus",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "a snappy vue calendar/date selector",
   "main": "./dist/calus.lib.js",
   "scripts": {
-    "build": "webpack --verbose",
+    "build": "NODE_ENV=production webpack --verbose",
     "devbuild": "NODE_ENV=development webpack",
     "start": "npx http-server . -d",
     "test": "echo \"Error: no test specified\" && exit 1",
