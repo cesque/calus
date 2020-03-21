@@ -91,6 +91,9 @@ export default function calus(options) {
             // controls to change which month is shown
             displayInColumn: options.displayInColumn || false,
 
+            // linear view for when showing a free flowing calendar
+            linearDates: options.linearDates || false,
+
             // which month is currently shown on screen (only used when
             // `displayInColumn` is false)
             currentDisplayedMonth: options.start ?
@@ -148,12 +151,12 @@ export default function calus(options) {
 
                 let startOfToday = this.now.startOf('day');
 
-                while (date.startOf('month') <= end) {
+                while (date <= end) {
                     let days = []
                     let monthStart;
                     let monthEnd;
 
-                    if (this.displayInColumn) {
+                    if (this.linearDates) {
                         monthStart = date.hasSame(this.now, 'month') ? date : date.startOf('month');
                         monthEnd = date.endOf('month');
                     } else {
