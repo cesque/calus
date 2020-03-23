@@ -23,6 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let calendar3 = new Calus({
         el: '#calendar3',
         displayInColumn: true,
+        linearDates: true,
+        startFromCurrentWeek: false,
         useDefaultTemplate: true,
     });
 
