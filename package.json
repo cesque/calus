@@ -43,12 +43,10 @@
   },
   "lint-staged": {
     "*.js": [
-      "npm run lint-js -- --fix",
-      "git add"
+      "npm run lint-js -- --fix"
     ],
     "*.scss": [
-      "npm run lint-css -- --fix",
-      "git add"
+      "npm run lint-css -- --fix"
     ]
   },
   "browserslist": [
