@@ -1,23 +1,90 @@
 {
   "name": "calus",
-  "version": "0.0.1",
+  "version": "2.0.0-alpha",
   "description": "a snappy vue calendar/date selector",
-  "main": "./dist/calus.lib.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "typings": "./index.d.ts",
-  "author": "",
   "license": "ISC",
+  "author": "Daniel James <euqsec@gmail.com> (http://cesque.com)",
+  "contributors": [
+    "Hiren Patel <hieroishere@oulook.com>"
+  ],
+  "main": "$npm_package_config_paths_dist/calus.js",
+  "config": {
+    "paths": {
+      "dist": "dist",
+      "demo": "demo",
+      "js": "src/js",
+      "css": "src/css"
+    }
+  },
+  "engines": {
+    "node": "10.7.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon --watch $npm_package_config_paths_demo -e html,js,css --exec 'nf start'",
+    "clean": "del-cli $npm_package_config_paths_dist/*",
+    "lint-css": "stylelint $npm_package_config_paths_css/{**/*,*}.scss --syntax scss",
+    "lint-js": "eslint webpack.config.js $npm_package_config_paths_js",
+    "lint": "npm run lint-js && npm run lint-css",
+    "build-js": "webpack --config webpack.config.js --progress",
+    "build-css-sass": "node-sass $npm_package_config_paths_css/style.scss -o $npm_package_config_paths_dist --source-map $npm_package_config_paths_dist",
+    "build-css-postcss": "postcss --use autoprefixer --use postcss-pxtorem --use cssnano --replace $npm_package_config_paths_dist/style.css --map",
+    "build-css": "npm run build-css-sass && npm run build-css-postcss",
+    "prebuild": "npm run clean",
+    "build": "NODE_ENV=production npm run build-js && npm run build-css",
+    "watch-js": "webpack --watch",
+    "watch-css": "nodemon --watch $npm_package_config_paths_css -e scss  --exec 'npm run lint-css --silent && npm run build-css'",
+    "watch": "concurrently --kill-others 'npm run watch-js' 'npm run watch-css'"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.js": [
+      "npm run lint-js -- --fix",
+      "git add"
+    ],
+    "*.scss": [
+      "npm run lint-css -- --fix",
+      "git add"
+    ]
+  },
+  "browserslist": [
+    "last 2 versions",
+    "ie >= 11",
+    "not dead"
+  ],
   "dependencies": {
     "luxon": "^1.21.1",
     "vue": "^2.6.10"
   },
   "devDependencies": {
-    "@babel/core": "^7.7.2",
-    "@babel/preset-env": "^7.7.1",
+    "@babel/core": "^7.9.0",
+    "@babel/preset-env": "^7.9.0",
+    "autoprefixer": "^9.7.5",
+    "babel-eslint": "^10.1.0",
     "babel-loader": "^8.0.6",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "concurrently": "^5.1.0",
+    "cssnano": "^4.1.10",
+    "del-cli": "^3.0.0",
+    "eslint": "^6.8.0",
+    "eslint-loader": "^3.0.3",
+    "eslint-plugin-compat": "^3.5.1",
+    "foreman": "^3.0.1",
+    "husky": "^4.2.3",
+    "lint-staged": "^10.0.9",
+    "node-sass": "^4.13.1",
+    "nodemon": "^2.0.2",
+    "path": "^0.12.7",
+    "postcss-cli": "^7.1.0",
+    "postcss-pxtorem": "^5.1.1",
+    "stylelint": "^13.2.1",
+    "stylelint-config-standard": "^20.0.0",
+    "terser-webpack-plugin": "^2.3.5",
+    "webpack": "^4.42.1",
+    "webpack-bundle-analyzer": "^3.6.1",
+    "webpack-cli": "^3.3.11"
   }
 }
