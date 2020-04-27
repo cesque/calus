@@ -60,6 +60,10 @@ export default function calus(options) {
             // whether to show all the months in a column, or a single month with
             // controls to change which month is shown
             displayInColumn: options.displayInColumn || false,
+
+            // linear view for when showing a free flowing calendar
+            linearDates: options.linearDates || false,
+
             // which month is currently shown on screen (only used when
             // `displayInColumn` is false)
             currentDisplayedMonth: DateTime.local().startOf('month'),
@@ -100,9 +104,16 @@ export default function calus(options) {
 
                 while (date <= end) {
                     let days = []
+                    let monthStart;
+                    let monthEnd;
 
-                    let monthStart = date.startOf('month').startOf('week').plus({ days: this.weekStartsOnSunday ? -1 : 0 })
-                    let monthEnd = date.endOf('month').plus({ days: this.weekStartsOnSunday ? 1 : 0 }).endOf('week').plus({ days: this.weekStartsOnSunday ? -1 : 0 })
+                    if (this.linearDates) {
+                        monthStart = date.hasSame(this.now, 'month') ? date : date.startOf('month');
+                        monthEnd = date.endOf('month');
+                    } else {
+                        monthStart = date.startOf('month').startOf('week').plus({ days: this.weekStartOffset });
+                        monthEnd = date.endOf('month').endOf('week').plus({ days: this.weekStartOffset });
+                    }
 
                     for (let day = monthStart; day <= monthEnd; day = day.plus({ days: 1 })) {
                         while(available.length && day > available[0]) {
@@ -158,7 +169,7 @@ export default function calus(options) {
             },
             setAvailable: function (array) {
                 this.resetSelected()
-                
+
                 if (typeof array[0] == 'string') {
 
                     // check that they are valid ISO dates;
@@ -173,7 +184,7 @@ export default function calus(options) {
                                 throw "Invalid ISO string found";
                             }
                         });
-                    } catch (error) {                        
+                    } catch (error) {
                         console.error(error);
                     }
 
