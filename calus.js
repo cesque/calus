@@ -46,7 +46,9 @@ export default function calus(options) {
 
     if (!docEl) throw 'no element found: ' + docEl
 
+    if (options.useDefaultTemplate) {
         docEl.innerHTML = defaultTemplate
+    }
 
     return new Vue({
         el: el,
