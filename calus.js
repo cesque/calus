@@ -100,7 +100,7 @@ export default function calus(options) {
                 let startOfCurrentlyDisplayed = this.availableDates.findIndex(x => x > date)
                 let available = this.availableDates.slice(this.displayInColumn ? 0 : startOfCurrentlyDisplayed)
 
-                let end = (this.displayInColumn ? this.lastAvailable : this.currentDisplayedMonth)
+                let end = (this.displayInColumn ? this.lastAvailable : this.currentDisplayedMonth).endOf('month')
 
                 let startOfToday = this.now.startOf('day')
 
