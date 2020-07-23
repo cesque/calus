@@ -80,7 +80,7 @@ export default function calus(options) {
         computed: {
             now: () => DateTime.local(),
             firstAvailable: function () {
-                return this.availableDates.length ? this.availableDates[0] : this.now;
+                return this.availableDates.length ? this.availableDates[0] : this.now
             },
             lastAvailable: function () {
                 return this.availableDates.length
@@ -101,29 +101,31 @@ export default function calus(options) {
                 let available = this.availableDates.slice(this.displayInColumn ? 0 : startOfCurrentlyDisplayed)
 
                 let end = (this.displayInColumn ? this.lastAvailable : this.currentDisplayedMonth).endOf('month')
-
                 let startOfToday = this.now.startOf('day')
+                let availableDatesIndex = 0
 
                 while (date <= end) {
                     let days = []
-                    let monthStart;
-                    let monthEnd;
+                    let monthStart
+                    let monthEnd
+
+                    availableDatesIndex = Math.max(0, availableDatesIndex - 7)
 
                     if (this.linearDates) {
-                        monthStart = date.hasSame(this.now, 'month') ? date : date.startOf('month');
-                        monthEnd = date.endOf('month');
+                        monthStart = date.hasSame(this.now, 'month') ? date : date.startOf('month')
+                        monthEnd = date.endOf('month')
                     } else {
-                        monthStart = date.startOf('month').startOf('week').plus({ days: this.weekStartOffset });
-                        monthEnd = date.endOf('month').endOf('week').plus({ days: this.weekStartOffset });
+                        monthStart = date.startOf('month').startOf('week').plus({ days: this.weekStartOffset })
+                        monthEnd = date.endOf('month').endOf('week').plus({ days: this.weekStartOffset })
                     }
 
                     for (let day = monthStart; day <= monthEnd; day = day.plus({ days: 1 })) {
-                        while(available.length && day > available[0]) {
-                            available.shift()
+                        while(availableDatesIndex < available.length && day > available[availableDatesIndex]) {
+                            availableDatesIndex++
                         }
 
                         let isAvailable = false
-                        if (available.length && available[0].hasSame(day, 'day')) {
+                        if (availableDatesIndex < available.length && available[availableDatesIndex].hasSame(day, 'day')) {
                             isAvailable = true
                         }
 
@@ -174,23 +176,23 @@ export default function calus(options) {
 
                 if (typeof array[0] == 'string') {
 
-                    // check that they are valid ISO dates;
-                    let ISODates = [];
+                    // check that they are valid ISO dates
+                    let ISODates = []
 
                     try {
                         ISODates = array.map((x) => {
-                            let isoDate =  DateTime.fromISO(x);
+                            let isoDate =  DateTime.fromISO(x)
                             if (isoDate.isValid) {
-                                return isoDate;
+                                return isoDate
                             } else {
-                                throw "Invalid ISO string found";
+                                throw "Invalid ISO string found"
                             }
-                        });
+                        })
                     } catch (error) {
-                        console.error(error);
+                        console.error(error)
                     }
 
-                    this.availableDates = ISODates;
+                    this.availableDates = ISODates
                 } else {
                     this.availableDates = array
                 }
