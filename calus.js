@@ -2,39 +2,19 @@ import Vue from 'vue'
 import { DateTime } from 'luxon'
 
 let defaultTemplate = `
-<div
-    class="month-container"
-    v-bind:class="{ 'month-container--column': displayInColumn }"
->
-    <div
-        class="month"
-        v-for="month in months"
-        v-bind:data-month="month.time.toFormat('MM/y')"
-    >
+<div class="month-container" v-bind:class="{ 'month-container--column': displayInColumn }">
+    <div class="month" v-for="month in months" v-bind:data-month="month.time.toFormat('MM/y')">
         <div class="month__header">
-            <button
-                type="button"
-                class="month__control month__control--prev"
-                v-if="!displayInColumn"
-                v-on:click="scrollMonth(-1)"
-                v-bind:disabled="limitCalendar && month.time.startOf('month') &lt; startDate"
-            >
-                ‹
-            </button>
-            <div class="month__text">
-                {{ month.time.toFormat(month.isInCurrentYear ? 'MMMM' : 'MMMM y') }}
-            </div>
-            <button
-                type="button"
-                class="month__control month__control--prev"
-                v-if="!displayInColumn"
-                v-on:click="scrollMonth(1)"
-                v-bind:disabled="limitCalendar && month.time.endOf('month') &gt; endDate"
-            >
-                ›
-            </button>
+        <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(-1)">
+            ‹
+        </button>
+        <div class="month__text">
+            {{ month.time.toFormat(month.isInCurrentYear ? 'MMMM' : 'MMMM y') }}
         </div>
-
+        <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(1)">
+            ›
+        </button>
+        </div>
         <div class="month__days">
         <div class="day"
             v-for="day in month.days"
@@ -59,8 +39,7 @@ let defaultTemplate = `
         </div>
     </div>
 </div>
-`;
-
+`
 export default function calus(options) {
     let el = options.el || '#calendar'
     let docEl = el instanceof HTMLElement ? el : document.querySelector(el)
@@ -71,22 +50,15 @@ export default function calus(options) {
         docEl.innerHTML = defaultTemplate
     }
 
-    let timezone = options.timezone || 'utc';
-
     return new Vue({
         el: el,
         data: {
-            // If set to true then the calendar will be limited to [ start/end | now/last available | first available/now ]
-            limitCalendar: !!options.limitCalendar,
-
             // list of dates which are available to select (use `setAvailable()` to
             // set this if you want to provide a list of ISO dates instead of Luxon
             // date objects)
             availableDates: options.availableDates || [],
-
             // currently selected date. this is reset when changing available dates
             selected: null,
-
             // whether to show all the months in a column, or a single month with
             // controls to change which month is shown
             displayInColumn: options.displayInColumn || false,
@@ -96,39 +68,19 @@ export default function calus(options) {
 
             // which month is currently shown on screen (only used when
             // `displayInColumn` is false)
-            currentDisplayedMonth: options.start ?
-                options.start.startOf('month') :
-                DateTime.local().setZone(timezone, { keepLocalTime: true }).startOf('month'),
-
-            // force the week to start on another day (0 is Monday)
-            weekStartOffset: options.weekStartOffset || 0,
+            currentDisplayedMonth: DateTime.local().startOf('month'),
+            // force the day to start on sunday instead of default monday
+            weekStartsOnSunday: options.weekStartsOnSunday || false,
 
             // callback for when an available date is clicked
             onSelect: options.onSelect || function (day) { },
-
             // callback for when selected month is changed with button
             onChangeMonth: options.onChangeMonth || function(prev, current) { },
-
-            // Sets when the calendar should start (defaults to today)
-            start: options.start,
-
-            // Sets when the calendar should end (defaults to the last "available" date)
-            end: options.end,
         },
         computed: {
-            now: () => DateTime.local().setZone(timezone, { keepLocalTime: true }),
-            startDate: function() {
-                return this.start ? this.start : this.now;
-            },
+            now: () => DateTime.local(),
             firstAvailable: function () {
                 return this.availableDates.length ? this.availableDates[0] : this.now;
-            },
-            endDate: function () {
-                return this.end ?
-                    this.end :
-                    this.lastAvailable ?
-                        this.lastAvailable :
-                        this.now;
             },
             lastAvailable: function () {
                 return this.availableDates.length
@@ -136,8 +88,8 @@ export default function calus(options) {
                     : this.now.plus({ months: 2 })
             },
             months: function () {
-                let months = [];
-                let date = null;
+                let months = []
+                let date = null
 
                 if (this.displayInColumn) {
                     date = this.firstAvailable < this.now ? this.firstAvailable : this.now
@@ -145,11 +97,12 @@ export default function calus(options) {
                     date = this.currentDisplayedMonth
                 }
 
-                let startOfCurrentlyDisplayed = this.availableDates.findIndex(x => x > date);
-                let available = this.availableDates.slice(this.displayInColumn ? 0 : startOfCurrentlyDisplayed);
-                let end = (this.displayInColumn ? this.endDate : this.currentDisplayedMonth);
+                let startOfCurrentlyDisplayed = this.availableDates.findIndex(x => x > date)
+                let available = this.availableDates.slice(this.displayInColumn ? 0 : startOfCurrentlyDisplayed)
 
-                let startOfToday = this.now.startOf('day');
+                let end = (this.displayInColumn ? this.lastAvailable : this.currentDisplayedMonth).endOf('month')
+
+                let startOfToday = this.now.startOf('day')
 
                 while (date <= end) {
                     let days = []
@@ -189,8 +142,8 @@ export default function calus(options) {
 
                     months.push({
                         time: date.startOf('month'),
-                        isCurrentMonth: (this.displayInColumn ? days[0] : days[15]).time.startOf('month').toFormat('y-MMM') === startOfToday.startOf('month').toFormat('y-MMM'),
-                        isInCurrentYear: (this.displayInColumn ? days[0] : days[15]).time.startOf('year').toFormat('y') === startOfToday.startOf('year').toFormat('y'),
+                        isCurrentMonth: +days[10].time.startOf('month') == +startOfToday.startOf('month'),
+                        isInCurrentYear: +days[10].time.startOf('year') == +startOfToday.startOf('year'),
                         days: days
                     })
 
@@ -218,8 +171,26 @@ export default function calus(options) {
             },
             setAvailable: function (array) {
                 this.resetSelected()
+
                 if (typeof array[0] == 'string') {
-                    this.availableDates = array.map(x => DateTime.fromISO(x, { setZone: true}))
+
+                    // check that they are valid ISO dates;
+                    let ISODates = [];
+
+                    try {
+                        ISODates = array.map((x) => {
+                            let isoDate =  DateTime.fromISO(x);
+                            if (isoDate.isValid) {
+                                return isoDate;
+                            } else {
+                                throw "Invalid ISO string found";
+                            }
+                        });
+                    } catch (error) {
+                        console.error(error);
+                    }
+
+                    this.availableDates = ISODates;
                 } else {
                     this.availableDates = array
                 }
@@ -253,4 +224,3 @@ export default function calus(options) {
         }
     })
 }
-
