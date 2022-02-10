@@ -73,7 +73,7 @@
     "foreman": "^3.0.1",
     "husky": "^4.2.3",
     "lint-staged": "^10.0.9",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "nodemon": "^2.0.2",
     "path": "^0.12.7",
     "postcss-cli": "^7.1.0",
