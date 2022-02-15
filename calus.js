@@ -1,226 +1,182 @@
-import Vue from 'vue'
 import { DateTime } from 'luxon'
 
-let defaultTemplate = `
-<div class="month-container" v-bind:class="{ 'month-container--column': displayInColumn }">
-    <div class="month" v-for="month in months" v-bind:data-month="month.time.toFormat('MM/y')">
-        <div class="month__header">
-        <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(-1)">
-            ‹
-        </button>
-        <div class="month__text">
-            {{ month.time.toFormat(month.isInCurrentYear ? 'MMMM' : 'MMMM y') }}
-        </div>
-        <button type="button" class="month__control month__control--prev" v-if="!displayInColumn" v-on:click="scrollMonth(1)">
-            ›
-        </button>
-        </div>
-        <div class="month__days">
-        <div class="day"
-            v-for="day in month.days"
-            v-bind:data-date="+day.time"
-            v-bind:class="{
-            'is-today': day.isToday,
-            'is-not-today': !day.isToday,
-            'is-available': day.isAvailable,
-            'is-not-available': !day.isAvailable,
-            'is-past': day.isPast,
-            'is-future': day.isFuture,
-            'is-selected': day.isSelected,
-            'is-this-month': day.isThisMonth,
-            'is-different-month': !day.isThisMonth,
-            }"
-            v-on:click="select(day)"
-        >
-            <div class="day__inner">
-                {{ day.time.day }}
-            </div>
-        </div>
-        </div>
-    </div>
-</div>
-`
-export default function calus(options) {
-    let el = options.el || '#calendar'
-    let docEl = el instanceof HTMLElement ? el : document.querySelector(el)
-
-    if (!docEl) throw 'no element found: ' + docEl
-
-    if (options.useDefaultTemplate) {
-        docEl.innerHTML = defaultTemplate
-    }
-
-    return new Vue({
-        el: el,
-        data: {
+export default {
+    props: ['availableDates', 'displayInColumn', 'linearDates', 'weekStartsOnSunday', 'onSelect', 'onChangeMonth', 'allowPreviousScroll'],
+    data: function() {
+        return {
             // list of dates which are available to select (use `setAvailable()` to
             // set this if you want to provide a list of ISO dates instead of Luxon
             // date objects)
-            availableDates: options.availableDates || [],
+            datesAvailable: this.availableDates || [],
             // currently selected date. this is reset when changing available dates
-            selected: null,
+            selectedDate: null,
             // whether to show all the months in a column, or a single month with
             // controls to change which month is shown
-            displayInColumn: options.displayInColumn || false,
-
+            renderInColumn: this.displayInColumn || false,
             // linear view for when showing a free flowing calendar
-            linearDates: options.linearDates || false,
-
+            linearView: this.linearDates || false,
             // which month is currently shown on screen (only used when
             // `displayInColumn` is false)
-            currentDisplayedMonth: DateTime.local().startOf('month'),
+            currentDisplayedMonth: DateTime.local().startOf("month"),
             // force the day to start on sunday instead of default monday
-            weekStartsOnSunday: options.weekStartsOnSunday || false,
-
+            startWeekOnSunday: this.weekStartsOnSunday || false,
             // callback for when an available date is clicked
-            onSelect: options.onSelect || function (day) { },
+            onDateSelect: this.onSelect || function (day) {},
             // callback for when selected month is changed with button
-            onChangeMonth: options.onChangeMonth || function(prev, current) { },
+            onMonthChange: this.onChangeMonth || function (prev, current) {},
+            // whether to allow scrolling back to months previous to current month
+            allowPrevScroll: this.allowPreviousScroll === 'true',
+        };
+    },
+    computed: {
+        now: function() {
+            return DateTime.local()
         },
-        computed: {
-            now: () => DateTime.local(),
-            firstAvailable: function () {
-                return this.availableDates.length ? this.availableDates[0] : this.now;
-            },
-            lastAvailable: function () {
-                return this.availableDates.length
-                    ? this.availableDates[this.availableDates.length - 1]
-                    : this.now.plus({ months: 2 })
-            },
-            months: function () {
-                let months = []
-                let date = null
+        firstAvailable: function () {
+            return this.datesAvailable.length ? this.datesAvailable[0] : this.now;
+        },
+        lastAvailable: function () {
+            return this.datesAvailable.length
+                ? this.datesAvailable[this.datesAvailable.length - 1]
+                : this.now.plus({ months: 2 })
+        },
+        months: function () {
+            let months = []
+            let date = null
 
-                if (this.displayInColumn) {
-                    date = this.firstAvailable < this.now ? this.firstAvailable : this.now
+            if (this.renderInColumn) {
+                date = this.firstAvailable < this.now ? this.firstAvailable : this.now
+            } else {
+                date = this.currentDisplayedMonth
+            }
+
+            let startOfCurrentlyDisplayed = this.datesAvailable.findIndex(x => x > date)
+            let available = this.datesAvailable.slice(this.renderInColumn ? 0 : startOfCurrentlyDisplayed)
+
+            let end = (this.renderInColumn ? this.lastAvailable : this.currentDisplayedMonth).endOf('month');
+
+            let startOfToday = this.now.startOf('day')
+
+            while (date <= end) {
+                let days = []
+                let monthStart;
+                let monthEnd;
+
+                if (this.linearView) {
+                    monthStart = date.hasSame(this.now, 'month') ? date : date.startOf('month');
+                    monthEnd = date.endOf('month');
                 } else {
-                    date = this.currentDisplayedMonth
+                    monthStart = date.startOf('month').startOf('week').plus({ days: this.weekStartOffset });
+                    monthEnd = date.endOf('month').endOf('week').plus({ days: this.weekStartOffset });
                 }
 
-                let startOfCurrentlyDisplayed = this.availableDates.findIndex(x => x > date)
-                let available = this.availableDates.slice(this.displayInColumn ? 0 : startOfCurrentlyDisplayed)
-
-                let end = (this.displayInColumn ? this.lastAvailable : this.currentDisplayedMonth).endOf('month')
-
-                let startOfToday = this.now.startOf('day')
-
-                while (date <= end) {
-                    let days = []
-                    let monthStart;
-                    let monthEnd;
-
-                    if (this.linearDates) {
-                        monthStart = date.hasSame(this.now, 'month') ? date : date.startOf('month');
-                        monthEnd = date.endOf('month');
-                    } else {
-                        monthStart = date.startOf('month').startOf('week').plus({ days: this.weekStartOffset });
-                        monthEnd = date.endOf('month').endOf('week').plus({ days: this.weekStartOffset });
+                for (let day = monthStart; day <= monthEnd; day = day.plus({ days: 1 })) {
+                    while(available.length && day > available[0]) {
+                        available.shift()
                     }
 
-                    for (let day = monthStart; day <= monthEnd; day = day.plus({ days: 1 })) {
-                        while(available.length && day > available[0]) {
-                            available.shift()
-                        }
+                    let isAvailable = false
 
-                        let isAvailable = false
-                        if (available.length && available[0].hasSame(day, 'day')) {
-                            isAvailable = true
-                        }
-
-
-                        let startOf = day.startOf('day')
-
-                        days.push({
-                            time: day,
-                            isToday: day.hasSame(this.now, 'day'),
-                            isAvailable: isAvailable,
-                            isPast: startOf < startOfToday,
-                            isFuture: startOf > startOfToday,
-                            isThisMonth: day.hasSame(date, 'month'),
-                        })
+                    if (available.length && available[0].hasSame(day, 'day')) {
+                        isAvailable = true
                     }
 
-                    months.push({
-                        time: date.startOf('month'),
-                        isCurrentMonth: +days[10].time.startOf('month') == +startOfToday.startOf('month'),
-                        isInCurrentYear: +days[10].time.startOf('year') == +startOfToday.startOf('year'),
-                        days: days
+                    let startOf = day.startOf('day')
+
+                    days.push({
+                        time: day,
+                        isToday: day.hasSame(this.now, 'day'),
+                        isAvailable: isAvailable,
+                        isPast: startOf < startOfToday,
+                        isFuture: startOf > startOfToday,
+                        isThisMonth: day.hasSame(date, 'month'),
                     })
-
-                    date = date.plus({ months: 1 })
                 }
 
-                return months
+                const sameMonth = date.startOf('month').hasSame(this.now, 'month');
+                const allowScroll = !this.allowPrevScroll && sameMonth;
+
+                months.push({
+                    time: date.startOf('month'),
+                    isCurrentMonth: +days[10].time.startOf('month') == +startOfToday.startOf('month'),
+                    isInCurrentYear: +days[10].time.startOf('year') == +startOfToday.startOf('year'),
+                    days: days,
+                    disablePrevScroll: allowScroll
+                })
+
+                date = date.plus({ months: 1 })
+            }
+
+            return months
+        }
+    },
+    methods: {
+        // select a day
+        select: function (day) {
+            if (day.isAvailable) {
+                // selected state is handled by direct DOM control
+                // it's a bit hacky, but it prevents a full redraw
+                // of the calendar, making it feel a lot snappier,
+                // especially with large amount of displayed dates
+                this.resetSelected()
+                this.selectedDate = day.time
+
+                this.addSelectedStyle(this.selectedDate)
+
+                this.onDateSelect(day);
             }
         },
-        methods: {
-            // select a day
-            select: function (day) {
-                if (day.isAvailable) {
-                    // selected state is handled by direct DOM control
-                    // it's a bit hacky, but it prevents a full redraw
-                    // of the calendar, making it feel a lot snappier,
-                    // especially with large amount of displayed dates
-                    this.resetSelected()
-                    this.selected = day.time
+        setAvailable: function (array) {
+            this.resetSelected()
 
-                    this.addSelectedStyle(this.selected)
+            if (typeof array[0] == 'string') {
 
-                    this.onSelect(day)
+                // check that they are valid ISO dates;
+                let ISODates = [];
+
+                try {
+                    ISODates = array.map((x) => {
+                        let isoDate =  DateTime.fromISO(x);
+                        if (isoDate.isValid) {
+                            return isoDate;
+                        } else {
+                            throw "Invalid ISO string found";
+                        }
+                    });
+                } catch (error) {
+                    console.error(error);
                 }
-            },
-            setAvailable: function (array) {
-                this.resetSelected()
 
-                if (typeof array[0] == 'string') {
-
-                    // check that they are valid ISO dates;
-                    let ISODates = [];
-
-                    try {
-                        ISODates = array.map((x) => {
-                            let isoDate =  DateTime.fromISO(x);
-                            if (isoDate.isValid) {
-                                return isoDate;
-                            } else {
-                                throw "Invalid ISO string found";
-                            }
-                        });
-                    } catch (error) {
-                        console.error(error);
-                    }
-
-                    this.availableDates = ISODates;
-                } else {
-                    this.availableDates = array
-                }
-            },
-            // resets the selected day
-            resetSelected: function () {
-                this.selected = null
+                this.datesAvailable = ISODates;
+            } else {
+                this.datesAvailable = array
+            }
+        },
+        // resets the selected day
+        resetSelected: function () {
+            this.selectedDate = null
+            this.removeSelectedStyle()
+        },
+        addSelectedStyle: function(time) {
+            let selectedEl = this.$el.querySelector('[data-date="' + (+time) + '"]')
+            if(selectedEl) {
+                selectedEl.classList.add('is-selected')
+            }
+        },
+        removeSelectedStyle: function() {
+            let currentSelectedDay = this.$el.querySelector('.day.is-selected')
+            if (currentSelectedDay) {
+                currentSelectedDay.classList.remove('is-selected')
+            }
+        },
+        scrollMonth: function (delta) {
+            if (!this.renderInColumn) {
                 this.removeSelectedStyle()
-            },
-            addSelectedStyle: function(time) {
-                let selectedEl = this.$el.querySelector('[data-date="' + (+time) + '"]')
-                if(selectedEl) {
-                    selectedEl.classList.add('is-selected')
-                }
-            },
-            removeSelectedStyle: function() {
-                let currentSelectedDay = this.$el.querySelector('.day.is-selected')
-                if (currentSelectedDay) {
-                    currentSelectedDay.classList.remove('is-selected')
-                }
-            },
-            scrollMonth: function (delta) {
-                if (!this.displayInColumn) {
-                    this.removeSelectedStyle()
-                    this.currentDisplayedMonth = this.currentDisplayedMonth.plus({ months: delta })
-                    setTimeout(() => {
-                        this.addSelectedStyle(this.selected)
-                    }, 1)
-                }
+                this.currentDisplayedMonth = this.currentDisplayedMonth.plus({ months: delta })
+                setTimeout(() => {
+                    this.addSelectedStyle(this.selectedDate)
+                }, 1)
             }
         }
-    })
+    }
 }
