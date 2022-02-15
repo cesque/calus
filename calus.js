@@ -1,7 +1,7 @@
-import { DateTime } from 'luxon'
+import { DateTime, Settings } from 'luxon'
 
 export default {
-    props: ['availableDates', 'displayInColumn', 'linearDates', 'weekStartsOnSunday', 'onSelect', 'onChangeMonth', 'allowPreviousScroll'],
+    props: ['timeZone', 'availableDates', 'displayInColumn', 'linearDates', 'weekStartsOnSunday', 'onSelect', 'onChangeMonth', 'allowPreviousScroll'],
     data: function() {
         return {
             // list of dates which are available to select (use `setAvailable()` to
@@ -178,5 +178,8 @@ export default {
                 }, 1)
             }
         }
-    }
+    },
+	beforeMount: function() {
+		Settings.defaultZoneName = this.timeZone || null;
+	}
 }

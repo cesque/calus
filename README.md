@@ -5,6 +5,7 @@ Designed to be used as a Vue component: `Vue.component(element, Calus)` where el
 
 ### Props
 You can pass the following props from the template:
+- `time-zone`: defaults to local otherwise can be explicitly set (i.e. Europe/London)
 - `available-dates`: list of dates which are available to select
 - `display-in-column`: whether to show all the months in a column, or a single month with controls to change which month is shown
 - `linear-dates`: linear view for when showing a free flowing calendar
@@ -23,6 +24,7 @@ You can pass the following props from the template:
 <calendar-calus
     inline-template
     allow-previous-scroll="true"
+	time-zone="America/Chicago"
 >
     <div class="month-container" v-bind:class="{ 'month-container--column': displayInColumn }">
         <div class="month" v-for="month in months" v-bind:data-month="month.time.toFormat('MM/y')">
