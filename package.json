@@ -24,5 +24,13 @@
     "http-server": "^0.12.0",
     "webpack": "^4.41.2",
     "webpack-cli": "^3.3.10"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MadeHQ/calus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/MadeHQ/calus/issues"
+  },
+  "homepage": "https://github.com/MadeHQ/calus#readme"
 }
