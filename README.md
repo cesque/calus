@@ -16,8 +16,7 @@ You can pass the following props from the template:
 
 ### Methods
 - `select()`: method to call when clicking on a date. Uses function passed into prop `on-select` for logic
-- `setAvailable()`: pass array of date strings where an event is available
-- `scrollMonth()`: pass any number (positive or negative) to scrolle forward/previous X months
+- `scrollMonth()`: pass any number (positive or negative) to scrolle forward/previous n months
 
 ### Example Template
 ```html

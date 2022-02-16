@@ -17,12 +17,6 @@ export default {
             type: Boolean,
             default: false,
         },
-        currentDisplayedMonth: {
-            type: Object,
-            default: function () {
-                return DateTime.local().startOf("month");
-            },
-        },
         weekStartsOnSunday: {
             type: Boolean,
             default: false,
@@ -44,23 +38,18 @@ export default {
     },
     data: function () {
         return {
-            datesAvailable: [],
+            currentDisplayedMonth: DateTime.local().startOf("month")
         };
     },
     computed: {
-        dates: function () {
-            return this.datesAvailable.length
-                ? this.datesAvailable
-                : this.availableDates;
-        },
         now: function () {
             return DateTime.local();
         },
         firstAvailable: function () {
-            return this.dates.length ? this.dates[0] : this.now;
+            return this.availableDates.length ? this.availableDates[0] : this.now;
         },
         lastAvailable: function () {
-            return this.dates.length ? this.dates[this.dates.length - 1] : this.now;
+            return this.availableDates.length ? this.availableDates[this.availableDates.length - 1] : this.now;
         },
         months: function () {
             let months = [];
@@ -75,10 +64,10 @@ export default {
                 date = this.currentDisplayedMonth;
             }
 
-            let startOfCurrentlyDisplayed = this.dates.findIndex(
+            let startOfCurrentlyDisplayed = this.availableDates.findIndex(
                 (x) => x > date
             );
-            let available = this.dates.slice(
+            let available = this.availableDates.slice(
                 this.displayInColumn ? 0 : startOfCurrentlyDisplayed
             );
 
@@ -177,34 +166,6 @@ export default {
                 this.addSelectedStyle(this.selectedDate);
 
                 this.onSelect(day);
-            }
-        },
-        setAvailable: function (array) {
-            console.warn(
-                "Deprecated. Used for backwards compatibility. Use prop available-dates instead"
-            );
-            this.resetSelected();
-
-            if (typeof array[0] == "string") {
-                // check that they are valid ISO dates;
-                let ISODates = [];
-
-                try {
-                    ISODates = array.map((x) => {
-                        let isoDate = DateTime.fromISO(x);
-                        if (isoDate.isValid) {
-                            return isoDate;
-                        } else {
-                            throw "Invalid ISO string found";
-                        }
-                    });
-                } catch (error) {
-                    console.error(error);
-                }
-
-                this.datesAvailable = ISODates;
-            } else {
-                this.datesAvailable = array;
             }
         },
         // resets the selected day
