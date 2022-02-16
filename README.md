@@ -11,7 +11,6 @@ You can pass the following props from the template:
 - `linear-dates`: linear view for when showing a free flowing calendar
 - `week-starts-on-sunday`: force the day to start on sunday instead of default monday
 - `on-select`: callback for when an available date is clicked
-- `on-change-month`: callback for when selected month is changed with button
 - `allow-scrolling-outside-of-date-range`: defaults to false, set to true if you want to be able to scroll to months outside of available date range
 - `month-controls-classes`: array of classes that control the previous/next month buttons i.e. `['.month__control--prev', '.month__control--next']`. This is used in conjunction with `display-in-column: false` and `allow-scrolling-outside-of-date-range: false` and sets a `disabled` class on the appropriate previous/next button
 

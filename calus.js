@@ -31,9 +31,6 @@ export default {
             type: Function,
             required: true,
         },
-        onChangeMonth: {
-            type: Function,
-        },
         allowScrollingOutsideOfDateRange: {
             type: Boolean,
             default: true,
