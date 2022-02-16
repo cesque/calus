@@ -6,7 +6,7 @@ Designed to be used as a Vue component: `Vue.component(element, Calus)` where el
 ### Props
 You can pass the following props from the template:
 - `time-zone`: defaults to local otherwise can be explicitly set (i.e. Europe/London)
-- `available-dates`: list of dates which are available to select
+- `available-dates`: list of dates which are available to select (luxon DateTime format)
 - `display-in-column`: whether to show all the months in a column, or a single month with controls to change which month is shown
 - `linear-dates`: linear view for when showing a free flowing calendar
 - `week-starts-on-sunday`: force the day to start on sunday instead of default monday
