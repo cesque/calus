@@ -48,18 +48,19 @@ export default {
         };
     },
     computed: {
+        dates: function () {
+            return this.datesAvailable.length
+                ? this.datesAvailable
+                : this.availableDates;
+        },
         now: function () {
             return DateTime.local();
         },
         firstAvailable: function () {
-            return this.datesAvailable.length
-                ? this.datesAvailable[0]
-                : this.now;
+            return this.dates.length ? this.dates[0] : this.now;
         },
         lastAvailable: function () {
-            return this.datesAvailable.length
-                ? this.datesAvailable[this.datesAvailable.length - 1]
-                : this.now.plus({ months: 2 });
+            return this.dates.length ? this.dates[this.dates.length - 1] : this.now;
         },
         months: function () {
             let months = [];
@@ -74,10 +75,10 @@ export default {
                 date = this.currentDisplayedMonth;
             }
 
-            let startOfCurrentlyDisplayed = this.datesAvailable.findIndex(
+            let startOfCurrentlyDisplayed = this.dates.findIndex(
                 (x) => x > date
             );
-            let available = this.datesAvailable.slice(
+            let available = this.dates.slice(
                 this.displayInColumn ? 0 : startOfCurrentlyDisplayed
             );
 
@@ -121,7 +122,7 @@ export default {
 
                     let isAvailable = false;
 
-                    if (available.length && available[0].hasSame(day, "day")) {
+                    if (available.length && available[0].day === day.day) {
                         isAvailable = true;
                     }
 
@@ -151,7 +152,11 @@ export default {
                 date = date.plus({ months: 1 });
             }
 
-            if (this.monthControlsClasses.length && !this.displayInColumn && !this.allowScrollingOutsideOfDateRange) {
+            if (
+                this.monthControlsClasses.length &&
+                !this.displayInColumn &&
+                !this.allowScrollingOutsideOfDateRange
+            ) {
                 this.disableScroll();
             }
 
@@ -256,6 +261,6 @@ export default {
         },
     },
     beforeMount: function () {
-        Settings.defaultZoneName = this.timeZone || null;
+        Settings.defaultZone = this.timeZone || null;
     },
 };
