@@ -12,19 +12,21 @@ You can pass the following props from the template:
 - `week-starts-on-sunday`: force the day to start on sunday instead of default monday
 - `on-select`: callback for when an available date is clicked
 - `on-change-month`: callback for when selected month is changed with button
-- `allow-previous-scroll`: defaults to false, set to true if you want to be able to scroll to months previous to today's
+- `allow-scrolling-outside-of-date-range`: defaults to false, set to true if you want to be able to scroll to months outside of available date range
+- `month-controls-classes`: array of classes that control the previous/next month buttons i.e. `['.month__control--prev', '.month__control--next']`. This is used in conjunction with `display-in-column: false` and `allow-scrolling-outside-of-date-range: false` and sets a `disabled` class on the appropriate previous/next button
 
 ### Methods
-- `select()`: method to call when clicking on a date
+- `select()`: method to call when clicking on a date. Uses function passed into prop `on-select` for logic
 - `setAvailable()`: pass array of date strings where an event is available
-- `scrollMonth()`: pass 1 or -1 to scroll forward/previous one month
+- `scrollMonth()`: pass any number (positive or negative) to scrolle forward/previous X months
 
 ### Example Template
 ```html
 <calendar-calus
     inline-template
-    allow-previous-scroll="true"
+    :allow-scrolling-outside-of-date-range="false"
 	time-zone="America/Chicago"
+	:month-controls-classes="['.month__control--prev', '.month__control--next']"
 >
     <div class="month-container" v-bind:class="{ 'month-container--column': displayInColumn }">
         <div class="month" v-for="month in months" v-bind:data-month="month.time.toFormat('MM/y')">
