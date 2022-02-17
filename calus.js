@@ -227,24 +227,32 @@ export default {
             if (min) {
                 let prevEl = document.querySelector(prev);
 
-                if (this.currentDisplayedMonth.month === min.month) {
-                    prevEl.classList.add("disabled");
-                    prevEl.disabled = true;
+                if (prevEl) {
+                    if (this.currentDisplayedMonth.month === min.month) {
+                        prevEl.classList.add("disabled");
+                        prevEl.disabled = true;
+                    } else {
+                        prevEl.classList.remove("disabled");
+                        prevEl.disabled = false;
+                    }
                 } else {
-                    prevEl.classList.remove("disabled");
-                    prevEl.disabled = false;
+                    console.error(`${prev} not found. Have you passed the correct class?`);
                 }
             }
 
             if (max) {
                 let nextEl = document.querySelector(next);
 
-                if (this.currentDisplayedMonth.month === max.month) {
-                    nextEl.classList.add("disabled");
-                    nextEl.disabled = true;
+                if (nextEl) {
+                    if (this.currentDisplayedMonth.month === max.month) {
+                        nextEl.classList.add("disabled");
+                        nextEl.disabled = true;
+                    } else {
+                        nextEl.classList.remove("disabled");
+                        nextEl.disabled = false;
+                    }
                 } else {
-                    nextEl.classList.remove("disabled");
-                    nextEl.disabled = false;
+                    console.error(`${next} not found. Have you passed the correct class?`);
                 }
             }
         },
