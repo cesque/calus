@@ -38,7 +38,8 @@ export default {
     },
     data: function () {
         return {
-            currentDisplayedMonth: DateTime.local().startOf("month")
+            currentDisplayedMonth: DateTime.local().startOf("month"),
+            weekStartOffset: this.weekStartsOnSunday ? -1 : 0,
         };
     },
     computed: {
@@ -224,18 +225,34 @@ export default {
             const next = this.monthControlsClasses[1];
 
             if (min) {
-                if (this.currentDisplayedMonth.month === min.month) {
-                    document.querySelector(prev).classList.add("disabled");
+                let prevEl = document.querySelector(prev);
+
+                if (prevEl) {
+                    if (this.currentDisplayedMonth.month === min.month) {
+                        prevEl.classList.add("disabled");
+                        prevEl.disabled = true;
+                    } else {
+                        prevEl.classList.remove("disabled");
+                        prevEl.disabled = false;
+                    }
                 } else {
-                    document.querySelector(prev).classList.remove("disabled");
+                    console.error(`${prev} not found. Have you passed the correct class?`);
                 }
             }
 
             if (max) {
-                if (this.currentDisplayedMonth.month === max.month) {
-                    document.querySelector(next).classList.add("disabled");
+                let nextEl = document.querySelector(next);
+
+                if (nextEl) {
+                    if (this.currentDisplayedMonth.month === max.month) {
+                        nextEl.classList.add("disabled");
+                        nextEl.disabled = true;
+                    } else {
+                        nextEl.classList.remove("disabled");
+                        nextEl.disabled = false;
+                    }
                 } else {
-                    document.querySelector(next).classList.remove("disabled");
+                    console.error(`${next} not found. Have you passed the correct class?`);
                 }
             }
         },
