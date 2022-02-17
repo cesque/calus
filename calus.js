@@ -141,6 +141,10 @@ export default {
                 date = date.plus({ months: 1 });
             }
 
+            /**
+             * Make sure everything is set correctly
+			 * before disabling scroll
+             */
             if (
                 this.monthControlsClasses.length &&
                 !this.displayInColumn &&
@@ -198,6 +202,7 @@ export default {
                 }, 1);
             }
         },
+		// Disable scrolling outside of date range
         disableScroll: function () {
             const min = this.firstAvailable;
             const max = this.lastAvailable;
