@@ -141,17 +141,7 @@ export default {
                 date = date.plus({ months: 1 });
             }
 
-            /**
-             * Make sure everything is set correctly
-			 * before disabling scroll
-             */
-            if (
-                this.monthControlsClasses.length &&
-                !this.displayInColumn &&
-                !this.allowScrollingOutsideOfDateRange
-            ) {
-                this.disableScroll();
-            }
+            this.disableScroll();
 
             return months;
         },
@@ -202,27 +192,53 @@ export default {
                 }, 1);
             }
         },
-		// Disable scrolling outside of date range
+        // Disable scrolling outside of date range
         disableScroll: function () {
-            const min = this.firstAvailable;
-            const max = this.lastAvailable;
-            const prev = this.monthControlsClasses[0];
-            const next = this.monthControlsClasses[1];
+            /**
+             * Make sure everything is set correctly
+             * before disabling scroll
+             */
+            if (
+                this.monthControlsClasses.length &&
+                !this.displayInColumn &&
+                !this.allowScrollingOutsideOfDateRange
+            ) {
+                const min = this.firstAvailable;
+                const max = this.lastAvailable;
+                const prev = this.monthControlsClasses[0];
+                const next = this.monthControlsClasses[1];
 
-            if (min) {
-                if (this.currentDisplayedMonth.month === min.month) {
-                    document.querySelector(prev).classList.add("disabled");
-                } else {
-                    document.querySelector(prev).classList.remove("disabled");
+                if (min) {
+                    if (this.currentDisplayedMonth.month === min.month) {
+                        document.querySelector(prev).classList.add("disabled");
+                    } else {
+                        document.querySelector(prev).classList.remove("disabled");
+                    }
+                }
+
+                if (max) {
+                    if (this.currentDisplayedMonth.month === max.month) {
+                        document.querySelector(next).classList.add("disabled");
+                    } else {
+                        document.querySelector(next).classList.remove("disabled");
+                    }
                 }
             }
 
-            if (max) {
-                if (this.currentDisplayedMonth.month === max.month) {
-                    document.querySelector(next).classList.add("disabled");
-                } else {
-                    document.querySelector(next).classList.remove("disabled");
-                }
+            if (!this.monthControlsClasses.length) {
+                console.warn("month-controls-classes prop missing or incorrect");
+            }
+
+            if (this.displayInColumn) {
+                console.warn(
+                    "display-in-column prop incorrectly set. Consider changing to false"
+                );
+            }
+
+            if (this.allowScrollingOutsideOfDateRange) {
+                console.warn(
+                    "allow-scrolling-outside-of-date-range prop incorrectly set. Consider changing to false"
+                );
             }
         },
     },
