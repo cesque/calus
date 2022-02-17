@@ -198,35 +198,14 @@ export default {
              * Make sure everything is set correctly
              * before disabling scroll
              */
-            if (
-                this.monthControlsClasses.length &&
-                !this.displayInColumn &&
-                !this.allowScrollingOutsideOfDateRange
-            ) {
-                const min = this.firstAvailable;
-                const max = this.lastAvailable;
-                const prev = this.monthControlsClasses[0];
-                const next = this.monthControlsClasses[1];
-
-                if (min) {
-                    if (this.currentDisplayedMonth.month === min.month) {
-                        document.querySelector(prev).classList.add("disabled");
-                    } else {
-                        document.querySelector(prev).classList.remove("disabled");
-                    }
-                }
-
-                if (max) {
-                    if (this.currentDisplayedMonth.month === max.month) {
-                        document.querySelector(next).classList.add("disabled");
-                    } else {
-                        document.querySelector(next).classList.remove("disabled");
-                    }
-                }
+            if (this.allowScrollingOutsideOfDateRange) {
+                return false;
             }
 
             if (!this.monthControlsClasses.length) {
-                console.warn("month-controls-classes prop missing or incorrect");
+                console.warn(
+                    "month-controls-classes prop missing"
+                );
             }
 
             if (this.displayInColumn) {
@@ -235,10 +214,29 @@ export default {
                 );
             }
 
-            if (this.allowScrollingOutsideOfDateRange) {
-                console.warn(
-                    "allow-scrolling-outside-of-date-range prop incorrectly set. Consider changing to false"
-                );
+            if (!this.monthControlsClasses.length || this.displayInColumn) {
+                return false;
+            }
+
+            const min = this.firstAvailable;
+            const max = this.lastAvailable;
+            const prev = this.monthControlsClasses[0];
+            const next = this.monthControlsClasses[1];
+
+            if (min) {
+                if (this.currentDisplayedMonth.month === min.month) {
+                    document.querySelector(prev).classList.add("disabled");
+                } else {
+                    document.querySelector(prev).classList.remove("disabled");
+                }
+            }
+
+            if (max) {
+                if (this.currentDisplayedMonth.month === max.month) {
+                    document.querySelector(next).classList.add("disabled");
+                } else {
+                    document.querySelector(next).classList.remove("disabled");
+                }
             }
         },
     },
