@@ -9,7 +9,7 @@ You can pass the following props from the template:
 - `available-dates`: list of dates which are available to select (luxon DateTime format)
 - `display-in-column`: whether to show all the months in a column, or a single month with controls to change which month is shown
 - `linear-dates`: linear view for when showing a free flowing calendar
-- `week-starts-on-sunday`: force the day to start on sunday instead of default monday
+- `week-starts-on-sunday`: force the day to start on sunday instead of default monday. Accepts true/false
 - `on-select`: callback for when an available date is clicked
 - `allow-scrolling-outside-of-date-range`: defaults to false, set to true if you want to be able to scroll to months outside of available date range
 - `month-controls-classes`: array of classes that control the previous/next month buttons i.e. `['.month__control--prev', '.month__control--next']`. This is used in conjunction with `display-in-column: false` and `allow-scrolling-outside-of-date-range: false` and sets a `disabled` class on the appropriate previous/next button

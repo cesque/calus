@@ -38,7 +38,8 @@ export default {
     },
     data: function () {
         return {
-            currentDisplayedMonth: DateTime.local().startOf("month")
+            currentDisplayedMonth: DateTime.local().startOf("month"),
+            weekStartOffset: this.weekStartsOnSunday ? -1 : 0,
         };
     },
     computed: {
@@ -224,18 +225,26 @@ export default {
             const next = this.monthControlsClasses[1];
 
             if (min) {
+                let prevEl = document.querySelector(prev);
+
                 if (this.currentDisplayedMonth.month === min.month) {
-                    document.querySelector(prev).classList.add("disabled");
+                    prevEl.classList.add("disabled");
+                    prevEl.disabled = true;
                 } else {
-                    document.querySelector(prev).classList.remove("disabled");
+                    prevEl.classList.remove("disabled");
+                    prevEl.disabled = false;
                 }
             }
 
             if (max) {
+                let nextEl = document.querySelector(next);
+
                 if (this.currentDisplayedMonth.month === max.month) {
-                    document.querySelector(next).classList.add("disabled");
+                    nextEl.classList.add("disabled");
+                    nextEl.disabled = true;
                 } else {
-                    document.querySelector(next).classList.remove("disabled");
+                    nextEl.classList.remove("disabled");
+                    nextEl.disabled = false;
                 }
             }
         },
