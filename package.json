@@ -1,36 +1,36 @@
 {
-  "name": "calus",
-  "version": "0.1.0",
-  "description": "a snappy vue calendar/date selector",
-  "main": "./dist/calus.lib.js",
-  "scripts": {
-    "build": "NODE_ENV=production webpack --verbose",
-    "devbuild": "NODE_ENV=development webpack",
-    "start": "npx http-server . -d",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "NODE_ENV=development webpack --watch"
-  },
-  "typings": "./index.d.ts",
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "luxon": "^2.3.0",
-    "vue": "^2.6.10"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.7.2",
-    "@babel/preset-env": "^7.7.1",
-    "babel-loader": "^8.0.6",
-    "http-server": "^0.12.0",
-    "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/MadeHQ/calus.git"
-  },
-  "bugs": {
-    "url": "https://github.com/MadeHQ/calus/issues"
-  },
-  "homepage": "https://github.com/MadeHQ/calus#readme"
+    "name": "calus",
+    "version": "1.0.2-alpha",
+    "description": "a snappy vue calendar/date selector",
+    "main": "./calus.js",
+    "scripts": {
+        "build": "NODE_ENV=production webpack --verbose",
+        "devbuild": "NODE_ENV=development webpack",
+        "start": "npx http-server . -d",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "watch": "NODE_ENV=development webpack --watch"
+    },
+    "typings": "./index.d.ts",
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "luxon": "^2.3.0",
+        "vue": "^2.6.10"
+    },
+    "devDependencies": {
+        "@babel/core": "^7.7.2",
+        "@babel/preset-env": "^7.7.1",
+        "babel-loader": "^8.0.6",
+        "http-server": "^0.12.0",
+        "webpack": "^4.41.2",
+        "webpack-cli": "^3.3.10"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/MadeHQ/calus.git"
+    },
+    "bugs": {
+        "url": "https://github.com/MadeHQ/calus/issues"
+    },
+    "homepage": "https://github.com/MadeHQ/calus#readme"
 }
