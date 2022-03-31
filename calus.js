@@ -65,13 +65,6 @@ export default {
                 date = this.currentDisplayedMonth;
             }
 
-            let startOfCurrentlyDisplayed = this.availableDates.findIndex(
-                (x) => x > date
-            );
-            let available = this.availableDates.slice(
-                this.displayInColumn ? 0 : startOfCurrentlyDisplayed
-            );
-
             let end = (
                 this.displayInColumn
                     ? this.lastAvailable
@@ -106,15 +99,12 @@ export default {
                     day <= monthEnd;
                     day = day.plus({ days: 1 })
                 ) {
-                    while (available.length && day > available[0]) {
-                        available.shift();
-                    }
+                    const startOfDay = day.startOf('day');
+                    const endOfDay = day.endOf('day');
 
-                    let isAvailable = false;
-
-                    if (available.length && available[0].day === day.day) {
-                        isAvailable = true;
-                    }
+                    const isAvailable = !!this.availableDates.find(dt => {
+                        return dt >= startOfDay && dt <= endOfDay;
+                    });
 
                     let startOf = day.startOf("day");
 
