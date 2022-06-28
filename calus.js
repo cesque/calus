@@ -218,7 +218,7 @@ export default {
                 let prevEl = document.querySelector(prev);
 
                 if (prevEl) {
-                    if (this.currentDisplayedMonth.month === min.month) {
+                    if (this.currentDisplayedMonth.month === min.month && this.currentDisplayedMonth.year === min.year) {
                         prevEl.classList.add("disabled");
                         prevEl.disabled = true;
                     } else {
@@ -234,7 +234,7 @@ export default {
                 let nextEl = document.querySelector(next);
 
                 if (nextEl) {
-                    if (this.currentDisplayedMonth.month === max.month) {
+                    if (this.currentDisplayedMonth.month === max.month && this.currentDisplayedMonth.year === max.year) {
                         nextEl.classList.add("disabled");
                         nextEl.disabled = true;
                     } else {
