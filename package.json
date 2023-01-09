@@ -55,7 +55,7 @@
     "not dead"
   ],
   "dependencies": {
-    "luxon": "^1.21.1",
+    "luxon": "^2.5.2",
     "vue": "^2.6.10"
   },
   "devDependencies": {
